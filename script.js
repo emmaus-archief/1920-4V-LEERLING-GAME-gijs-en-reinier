@@ -20,6 +20,8 @@
 const UITLEG = 0;
 const SPELEN = 1;
 const GAMEOVER = 2;
+const xPositieSpeler = 30;
+var yPositieSpeler = 20;
 var spelStatus = SPELEN;
 
 var spelerX = 200; // x-positie van speler
@@ -33,7 +35,8 @@ var vijandY = 0;   // y-positie van vijand
 
 var score = 0; // aantal behaalde punten
 
-
+var keyIsPressed = true;
+var spelerLengte = 100; // variabele voor de lengte van de speler met beginlengte
 
 
 
@@ -47,7 +50,7 @@ var score = 0; // aantal behaalde punten
  */
 var tekenVeld = function () {
   fill("purple");
-  rect(20, 20, width - 2 * 20, height - 2 * 20);
+  rect(0, 0, width, height );
 };
 
 
@@ -78,10 +81,11 @@ var tekenKogel = function(x, y) {
  * @param {number} x x-coördinaat
  * @param {number} y y-coördinaat
  */
-var tekenSpeler = function(x, y) {
+var tekenSpeler = function(xPositieSpeler, yPositieSpeler) {
   fill("white");
-  ellipse(x, y, 50, 50);
+  rect(xPositieSpeler, yPositieSpeler, 10, spelerLengte);
 };
+
 
 
 /**
@@ -107,6 +111,7 @@ var beweegKogel = function() {
 var beweegSpeler = function() {
 
 };
+
 
 
 /**
@@ -164,7 +169,14 @@ function draw() {
     case SPELEN:
       beweegVijand();
       beweegKogel();
-      beweegSpeler();
+      beweegSpeler(); {
+          if (keyIsDown(UP_ARROW) && spelerY > 15  ) {
+              spelerY = spelerY - 10;
+          }
+         if (keyIsDown(DOWN_ARROW) && spelerY < 605) {
+              spelerY = spelerY + 10;
+          }
+      }
       
       if (checkVijandGeraakt()) {
         // punten erbij
