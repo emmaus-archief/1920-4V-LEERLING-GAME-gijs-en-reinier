@@ -21,7 +21,7 @@ const UITLEG = 0;
 const SPELEN = 1;
 const GAMEOVER = 2;
 const xPositieSpeler = 30;
-var yPositieSpeler = 20;
+var yPositieSpeler = 200;
 var spelStatus = SPELEN;
 
 var spelerX = 200; // x-positie van speler
@@ -38,7 +38,12 @@ var score = 0; // aantal behaalde punten
 var keyIsPressed = true;
 var spelerLengte = 100; // variabele voor de lengte van de speler met beginlengte
 
+var balX = 500;
+var balY = 300;
+const spelerBreedte = 10;
 
+const balBreedte = 20;
+const balLengte = 20;
 
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
@@ -49,8 +54,8 @@ var spelerLengte = 100; // variabele voor de lengte van de speler met beginlengt
  * Tekent het speelveld
  */
 var tekenVeld = function () {
-  fill("purple");
-  rect(0, 0, width, height );
+  fill("black");
+  rect(0, 0, 1280, 720);
 };
 
 
@@ -83,7 +88,7 @@ var tekenKogel = function(x, y) {
  */
 var tekenSpeler = function(xPositieSpeler, yPositieSpeler) {
   fill("white");
-  rect(xPositieSpeler, yPositieSpeler, 10, spelerLengte);
+  rect(xPositieSpeler, yPositieSpeler, spelerBreedte, spelerLengte);
 };
 
 
@@ -92,15 +97,18 @@ var tekenSpeler = function(xPositieSpeler, yPositieSpeler) {
  * Updatet globale variabelen met positie van vijand of tegenspeler
  */
 var beweegVijand = function() {
-    
+    for (balX = 500; balX < 40; balX = balX - 1){
+        balX = balX - 2;
+    };
 };
 
 
 /**
  * Updatet globale variabelen met positie van kogel of bal
  */
-var beweegKogel = function() {
-
+var tekenBal = function(balX, balY) {
+   fill("white");
+   ellipse(balX, balY, balBreedte, balLengte);
 };
 
 
@@ -156,6 +164,8 @@ function setup() {
 
   // Kleur de achtergrond blauw, zodat je het kunt zien
   background('blue');
+  fill("black")
+  rect(0, 0, 1280, 720);
 }
 
 
@@ -167,8 +177,6 @@ function setup() {
 function draw() {
   switch (spelStatus) {
     case SPELEN:
-      beweegVijand();
-      beweegKogel();
       beweegSpeler(); {
           if (keyIsDown(UP_ARROW) && spelerY > 15  ) {
               spelerY = spelerY - 10;
@@ -189,10 +197,12 @@ function draw() {
       }
 
       tekenVeld();
-      tekenVijand(vijandX, vijandY);
+      tekenBal(balX, balY);
       tekenKogel(kogelX, kogelY);
       tekenSpeler(spelerX, spelerY);
-
+      beweegVijand(); 
+        
+      
       if (checkGameOver()) {
         spelStatus = GAMEOVER;
       }
