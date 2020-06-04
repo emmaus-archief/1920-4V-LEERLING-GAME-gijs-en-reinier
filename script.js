@@ -20,8 +20,9 @@
 const UITLEG = 0;
 const SPELEN = 1;
 const GAMEOVER = 2;
-const xPositieSpeler = 30;
+const xPositieSpeler = 300;
 var yPositieSpeler = 200;
+
 var spelStatus = SPELEN;
 
 var spelerX = 200; // x-positie van speler
@@ -45,6 +46,9 @@ const spelerBreedte = 10;
 const balBreedte = 20;
 const balLengte = 20;
 
+const veldBreedte = 1280;
+const veldLengte = 720;
+
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
 /* ********************************************* */
@@ -55,7 +59,9 @@ const balLengte = 20;
  */
 var tekenVeld = function () {
   fill("black");
-  rect(0, 0, 1280, 720);
+  rect(0, 0, veldBreedte, veldLengte);
+  fill("white")
+  rect(1200, 10, 10, 700);
 };
 
 
@@ -97,9 +103,7 @@ var tekenSpeler = function(xPositieSpeler, yPositieSpeler) {
  * Updatet globale variabelen met positie van vijand of tegenspeler
  */
 var beweegVijand = function() {
-    for (balX = 500; balX < 40; balX = balX - 1){
-        balX = balX - 2;
-    };
+    
 };
 
 
@@ -178,11 +182,11 @@ function draw() {
   switch (spelStatus) {
     case SPELEN:
       beweegSpeler(); {
-          if (keyIsDown(UP_ARROW) && spelerY > 15  ) {
-              spelerY = spelerY - 10;
+          if (keyIsDown(UP_ARROW) && yPositieSpeler > 15  ) {
+              yPositieSpeler = yPositieSpeler - 10;
           }
-         if (keyIsDown(DOWN_ARROW) && spelerY < 605) {
-              spelerY = spelerY + 10;
+         if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 605) {
+              yPositieSpeler = yPositieSpeler + 10;
           }
       }
       
@@ -199,8 +203,29 @@ function draw() {
       tekenVeld();
       tekenBal(balX, balY);
       tekenKogel(kogelX, kogelY);
-      tekenSpeler(spelerX, spelerY);
-      beweegVijand(); 
+      tekenSpeler(xPositieSpeler, yPositieSpeler);
+      beweegVijand(); {
+          if (balX > xPositieSpeler +  0.5 * balBreedte + spelerBreedte || balX <= xPositieSpeler) {
+          balX = balX - 2;
+          balY = balY - 0.5;}
+         
+          else if (balX === xPositieSpeler + 0.5 * balBreedte + spelerBreedte && balY > yPositieSpeler && balY < yPositieSpeler + 100) {
+              balX = balX + 2;
+              balY = balY + 0.5;
+          }
+          else if (balY > yPositieSpeler + 100 ||  balY < yPositieSpeler) {
+              balX = balX - 2;
+              balY = balY - 0.5;
+          }
+          else if (balY === 0 + 0.5 * balBreedte){
+              balY = balY + 0.5;
+          }
+          else if (balY === 700 - 0.5 * balBreedte){
+              balY = balY = 0.5;
+          }
+
+          
+      }
         
       
       if (checkGameOver()) {
