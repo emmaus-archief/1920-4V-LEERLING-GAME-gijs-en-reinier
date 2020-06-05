@@ -20,6 +20,7 @@
 const UITLEG = 0;
 const SPELEN = 1;
 const GAMEOVER = 2;
+// variabelen voor de
 const xPositieSpeler = 300;
 var yPositieSpeler = 200;
 
@@ -34,20 +35,27 @@ var kogelY = 0;    // y-positie van kogel
 var vijandX = 0;   // x-positie van vijand
 var vijandY = 0;   // y-positie van vijand
 
+const muurX = 1200; // waarde voor de x-positie van de rechtermuur
+const muurLengte = 700; // waarde voor de lengte van de rechtermuur
+
 var score = 0; // aantal behaalde punten
 
-var keyIsPressed = true;
+var keyIsDown = true; // variabele die checkt of er een toets wordt ingedrukt
 var spelerLengte = 100; // variabele voor de lengte van de speler met beginlengte
 
-var balX = 500;
-var balY = 300;
-const spelerBreedte = 10;
+var balX = 600; // x-waarde van de beginpositie van de bal
+var balY = 300; // y-waarde van de beginpositie van de bal
+const spelerBreedte = 10; // waarde voor de breedte van de speler
 
-const balBreedte = 20;
-const balLengte = 20;
+var beweegVariabeleX = 5; // variabele voor de snelheid waarmee de bal beweegt over de x-as
+var beweegVariabeleY = 2.5; // variabele voor de snelheid waarmee de bal beweegt over de y-as
 
-const veldBreedte = 1280;
-const veldLengte = 720;
+const balBreedte = 20; // waarde voor de breedte van de bal
+const balLengte = 20; // waarde voor de lengte van de bal
+
+const veldBreedte = 1280; // waarde voor de breedte van het hele veld (x-as)
+const veldLengte = 720; // waarde voor de lengte van het hele veld (y-as)
+
 
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
@@ -60,11 +68,23 @@ const veldLengte = 720;
 var tekenVeld = function () {
   fill("black");
   rect(0, 0, veldBreedte, veldLengte);
-  fill("white")
-  rect(1200, 10, 10, 700);
+  fill("white");
+  rect(muurX, 10, 10, muurLengte);
+  fill("white");
+  textFont('georgia');
+  textSize(100);
+  text("Pong!", veldBreedte / 2 - 200, 100);
+  textSize(75);
+  text("score:  " + score, veldBreedte / 2 - 600, 100)
 };
 
-
+var startScherm = function(){
+    fill("blue")
+    rect(0, 0, veldBreedte, veldLengte);
+    fill("black")
+    textSize(50);
+    text("Welkom", 600, 20);
+}
 /**
  * Tekent de vijand
  * @param {number} x x-coördinaat
@@ -130,10 +150,6 @@ var beweegSpeler = function() {
  * Zoekt uit of de vijand is geraakt
  * @returns {boolean} true als vijand is geraakt
  */
-var checkVijandGeraakt = function() {
-
-  return false;
-};
 
 
 /**
@@ -142,11 +158,13 @@ var checkVijandGeraakt = function() {
  * @returns {boolean} true als speler is geraakt
  */
 var checkSpelerGeraakt = function() {
-    
+
   return false;
 };
 
-
+var checkVijandGeraakt = function(){
+   
+};
 /**
  * Zoekt uit of het spel is afgelopen
  * @returns {boolean} true als het spel is afgelopen
@@ -155,6 +173,7 @@ var checkGameOver = function() {
     
   return false;
 };
+
 
 
 /**
@@ -180,20 +199,17 @@ function setup() {
  */
 function draw() {
   switch (spelStatus) {
+    
     case SPELEN:
       beweegSpeler(); {
           if (keyIsDown(UP_ARROW) && yPositieSpeler > 15  ) {
               yPositieSpeler = yPositieSpeler - 10;
           }
-         if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 605) {
+          if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 605) {
               yPositieSpeler = yPositieSpeler + 10;
           }
       }
       
-      if (checkVijandGeraakt()) {
-        // punten erbij
-        // nieuwe vijand maken
-      }
       
       if (checkSpelerGeraakt()) {
         // leven eraf of gezondheid verlagen
@@ -205,28 +221,46 @@ function draw() {
       tekenKogel(kogelX, kogelY);
       tekenSpeler(xPositieSpeler, yPositieSpeler);
       beweegVijand(); {
-          if (balX > xPositieSpeler +  0.5 * balBreedte + spelerBreedte || balX <= xPositieSpeler) {
-          balX = balX - 2;
-          balY = balY - 0.5;}
-         
+          if (balX > xPositieSpeler +  0.5 * balBreedte + spelerBreedte || balX <= xPositieSpeler)  // laat de bal vanaf zijn beginpositie naar linksboven bewegen. 
+          // zorgt ervoor dat de bal omhoog/omlaag beweegt als hij de onderste/bovenste rand raakt en naar links bewegen als hij de witte muur raakt.
+          {
+              balX = balX - beweegVariabeleX;
+              balY = balY - beweegVariabeleY;
+              if (balY === 0 + 0.5 * balLengte){
+                beweegVariabeleY = beweegVariabeleY * -1;
+                balY = balY - beweegVariabeleY;
+              }
+              else if (balY === 700 - 0.5 * balLengte){
+                beweegVariabeleY = beweegVariabeleY * -1;
+                balY = balY - beweegVariabeleY;}
+              else if (balX === muurX - 0.5 * balBreedte){
+                 beweegVariabeleX = beweegVariabeleX * -1;
+                 balX = balX - beweegVariabeleX;
+              
+          }
+                    }       
+                    // laat de bal terugkaatsen als hij de speler raakt   
           else if (balX === xPositieSpeler + 0.5 * balBreedte + spelerBreedte && balY > yPositieSpeler && balY < yPositieSpeler + 100) {
-              balX = balX + 2;
-              balY = balY + 0.5;
-          }
+              
+          beweegVariabeleX = beweegVariabeleX * -1
+          balX = balX - beweegVariabeleX;
+              
+          }       // laat de bal doorgaan als hij de x- maar niet de y-positie van de speler raakt.
           else if (balY > yPositieSpeler + 100 ||  balY < yPositieSpeler) {
-              balX = balX - 2;
-              balY = balY - 0.5;
+              balX = balX - beweegVariabeleX;
+              balY = balY - beweegVariabeleY;
           }
-          else if (balY === 0 + 0.5 * balBreedte){
-              balY = balY + 0.5;
-          }
-          else if (balY === 700 - 0.5 * balBreedte){
-              balY = balY = 0.5;
-          }
+           
 
           
       }
-        
+        checkVijandGeraakt(); {
+          if (balX = 1190){
+              score = score + 1;
+          }
+          
+      }
+      
       
       if (checkGameOver()) {
         spelStatus = GAMEOVER;
