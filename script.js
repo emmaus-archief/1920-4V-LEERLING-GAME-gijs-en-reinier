@@ -16,15 +16,15 @@
 /* ********************************************* */
 /* globale variabelen die je gebruikt in je game */
 /* ********************************************* */
-
-const UITLEG = 0;
-const SPELEN = 1;
-const GAMEOVER = 2;
+var STARTSCHERM = 3;
+var UITLEG = 0;
+var SPELEN = 1;
+var GAMEOVER = 2;
 // variabelen voor de
 const xPositieSpeler = 300;
 var yPositieSpeler = 200;
 
-var spelStatus = SPELEN;
+var spelStatus = STARTSCHERM;
 
 var spelerX = 200; // x-positie van speler
 var spelerY = 100; // y-positie van speler
@@ -57,6 +57,13 @@ const veldBreedte = 1280; // waarde voor de breedte van het hele veld (x-as)
 const veldLengte = 720; // waarde voor de lengte van het hele veld (y-as)
 
 var kleurWaarde = 255;
+
+var mouseX;
+var mouseY;
+var mouseIsPressed;
+var tekstgrootteUitleg = 50;
+var tekstgrootteSpelen = 50;
+var vergrotertekstUitlegenSpelen = 10;
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
 /* ********************************************* */
@@ -79,19 +86,13 @@ var tekenVeld = function () {
   
 };
 
-var startScherm = function(){
-    fill("blue")
-    rect(0, 0, veldBreedte, veldLengte);
-    fill("black")
-    textSize(50);
-    text("Welkom", 600, 20);
-}
+
 /**
  * Tekent de vijand
  * @param {number} x x-coördinaat
  * @param {number} y y-coördinaat
  */
-var tekenVijand = function(x, y) {
+var tekenVijand = function(veldBreedte, veldLengte, tekstgrootteUitleg, tekstgrootteSpelen, vergrotertekstUitlegenSpelen) {
     
 
 };
@@ -163,8 +164,8 @@ var beweegSpeler = function() {
  * @returns {boolean} true als speler is geraakt
  */
 var checkSpelerGeraakt = function() {
-
-  return false;
+    
+  
 };
 
 var checkVijandGeraakt = function(){
@@ -192,8 +193,7 @@ function setup() {
 
   // Kleur de achtergrond blauw, zodat je het kunt zien
   background('blue');
-  fill(kleurWaarde, 103,77)
-  rect(0, 0, 1280, 720);
+
 }
 
 
@@ -204,7 +204,71 @@ function setup() {
  */
 function draw() {
   switch (spelStatus) {
-    
+    case STARTSCHERM:
+    tekenVijand(veldBreedte, veldLengte, tekstgrootteUitleg, tekstgrootteSpelen, vergrotertekstUitlegenSpelen); {
+         fill(102, 215, 237);
+         rect(0, 0, veldBreedte, veldLengte);
+         fill("white");
+         textSize(50);
+         textFont("georgia");
+         text("Welkom bij Pong!", 400, 100);
+         textSize(40);
+         text("'s werelds leukste game", 400, 200);
+         textSize(tekstgrootteUitleg);
+         text("Uitleg", 200, 400, 300, 450);
+         textSize(tekstgrootteSpelen);
+         text("Spelen", 900, 400, 1000, 450);
+         if (mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450 && mouseIsPressed){
+             spelStatus = UITLEG;
+         }
+         else if (mouseX >= 700 && mouseX <= 800 && mouseY >= 400 && mouseY <= 450 && mouseIsPressed){
+             spelStatus = SPELEN;
+         }
+         else if(mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450){
+              tekstgrootteUitlegenSpelen = tekstgrootteUitlegenSpelen + vergrotertekstUitlegenSpelen;
+              if (tekstgrootteUitlegenSpelen = 60){
+                  vergrotertekstUitlegenSpelen = -10;
+
+              } 
+         }
+         else if (mouseX >= 700 && mouseX <= 800 && mouseY >= 400 && mouseY <= 450){
+             tekstgrootteUitlegenSpelen = tekstgrootteUitlegenSpelen + 10;
+             if (tekstgrootteUitlegenSpelen = 60){
+                  vergrotertekstUitlegenSpelen = -10;
+
+              } 
+         
+        }
+    }
+
+
+
+    break;
+
+    case UITLEG:
+    checkSpelerGeraakt();{
+        fill(102, 215, 237);
+        rect(0, 0, veldBreedte, veldLengte);
+        textSize(50);
+        textFont("georgia");
+        text("Welkom bij Pong!", 400, 100);
+        textSize(40);
+        text("'s werelds leukste game", 350, 200);
+        fill("white");
+        textSize(20);
+        text("Bij Pong is het de bedoeling om een zo hoog mogelijke score te halen. Dit doe je door met je speler, die je door middel van de pijltjes omhoog en omlaag op je toetsenbord omhoog en omlaag kan laten bewegen, het witte balletje terug te kaatsen naar waar die vandaan komt. Als dan het balletje de witte muur aan de rechterzijde van het speelveld raakt, krijg je een punt. Hoe hoger je score, hoe moeilijker het spelletje wordt. Je speler wordt kleiner en het balletje beweegt sneller. Veel succes!", 200, 300, 1000, 800);
+        textSize(30);
+        text("Menu", 200, 600, 300, 650);
+        text("Spelen", 1100, 600, 1150, 650);
+        if (mouseX >= 200 && mouseX <= 300 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed ){
+            spelStatus = STARTSCHERM
+        }
+        else if (mouseX >= 1100 && mouseX <= 1150 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed){
+            spelStatus = SPELEN
+        }
+    }
+    break;
+
     case SPELEN:
       beweegSpeler(); {
           if (keyIsDown(UP_ARROW) && yPositieSpeler > 15  ) {
@@ -222,7 +286,7 @@ function draw() {
       }
      
       tekenVeld();
-      veranderKleur(kleurWaarde);
+      veranderKleur(kleurWaarde, score);
       tekenBal(balX, balY);
       tekenKogel(kogelX, kogelY);
       tekenSpeler(xPositieSpeler, yPositieSpeler);
