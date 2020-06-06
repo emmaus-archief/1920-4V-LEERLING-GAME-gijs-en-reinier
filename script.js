@@ -56,7 +56,7 @@ const balLengte = 20; // waarde voor de lengte van de bal
 const veldBreedte = 1280; // waarde voor de breedte van het hele veld (x-as)
 const veldLengte = 720; // waarde voor de lengte van het hele veld (y-as)
 
-
+var kleurWaarde = 255;
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
 /* ********************************************* */
@@ -66,16 +66,17 @@ const veldLengte = 720; // waarde voor de lengte van het hele veld (y-as)
  * Tekent het speelveld
  */
 var tekenVeld = function () {
-  fill("black");
+  fill(kleurWaarde, 103, 77);
   rect(0, 0, veldBreedte, veldLengte);
   fill("white");
   rect(muurX, 10, 10, muurLengte);
   fill("white");
   textFont('georgia');
-  textSize(100);
+  textSize(80);
   text("Pong!", veldBreedte / 2 - 200, 100);
   textSize(75);
   text("score:  " + score, veldBreedte / 2 - 600, 100)
+  
 };
 
 var startScherm = function(){
@@ -95,7 +96,11 @@ var tekenVijand = function(x, y) {
 
 };
 
-
+var veranderKleur = function(kleurWaarde, score){
+    if (score >= 5){
+        kleurWaarde = kleurWaarde - 10;
+    }
+}
 /**
  * Tekent de kogel of de bal
  * @param {number} x x-coördinaat
@@ -163,7 +168,7 @@ var checkSpelerGeraakt = function() {
 };
 
 var checkVijandGeraakt = function(){
-   
+   return false;
 };
 /**
  * Zoekt uit of het spel is afgelopen
@@ -187,7 +192,7 @@ function setup() {
 
   // Kleur de achtergrond blauw, zodat je het kunt zien
   background('blue');
-  fill("black")
+  fill(kleurWaarde, 103,77)
   rect(0, 0, 1280, 720);
 }
 
@@ -215,8 +220,9 @@ function draw() {
         // leven eraf of gezondheid verlagen
         // eventueel: nieuwe speler maken
       }
-
+     
       tekenVeld();
+      veranderKleur(kleurWaarde);
       tekenBal(balX, balY);
       tekenKogel(kogelX, kogelY);
       tekenSpeler(xPositieSpeler, yPositieSpeler);
@@ -236,11 +242,13 @@ function draw() {
               else if (balX === muurX - 0.5 * balBreedte){
                  beweegVariabeleX = beweegVariabeleX * -1;
                  balX = balX - beweegVariabeleX;
+                 score = score + 1; // verhoogt de score als het balletje de rechtermuur raakt
+              
               
           }
                     }       
                     // laat de bal terugkaatsen als hij de speler raakt   
-          else if (balX === xPositieSpeler + 0.5 * balBreedte + spelerBreedte && balY > yPositieSpeler && balY < yPositieSpeler + 100) {
+          else if (balX === xPositieSpeler + 0.5 * balBreedte + spelerBreedte && balY >= yPositieSpeler && balY <= yPositieSpeler + 100) {
               
           beweegVariabeleX = beweegVariabeleX * -1
           balX = balX - beweegVariabeleX;
@@ -254,12 +262,9 @@ function draw() {
 
           
       }
-        checkVijandGeraakt(); {
-          if (balX = 1190){
-              score = score + 1;
-          }
+        checkVijandGeraakt(); 
           
-      }
+      
       
       
       if (checkGameOver()) {
