@@ -20,6 +20,7 @@ var STARTSCHERM = 3;
 var UITLEG = 0;
 var SPELEN = 1;
 var GAMEOVER = 2;
+var PAUZE = 4;
 // variabelen voor de
 const xPositieSpeler = 300;
 var yPositieSpeler = 200;
@@ -43,7 +44,7 @@ var score = 0; // aantal behaalde punten
 var keyIsDown = true; // variabele die checkt of er een toets wordt ingedrukt
 var spelerLengte = 100; // variabele voor de lengte van de speler met beginlengte
 
-var balX = 600; // x-waarde van de beginpositie van de bal
+var balX = 700; // x-waarde van de beginpositie van de bal
 var balY = 300; // y-waarde van de beginpositie van de bal
 const spelerBreedte = 10; // waarde voor de breedte van de speler
 
@@ -63,7 +64,10 @@ var mouseY;
 var mouseIsPressed;
 var tekstgrootteUitleg = 50;
 var tekstgrootteSpelen = 50;
-var vergrotertekstUitlegenSpelen = 10;
+var vergrotertekstUitleg = 10;
+var vergrotertekstSpelen = 10;
+
+
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
 /* ********************************************* */
@@ -81,9 +85,17 @@ var tekenVeld = function () {
   textFont('georgia');
   textSize(80);
   text("Pong!", veldBreedte / 2 - 200, 100);
-  textSize(75);
+  textSize(60);
   text("score:  " + score, veldBreedte / 2 - 600, 100)
-  
+  textSize(30);
+  text("Menu", 100, 600, 250, 650);
+  if (mouseX >= 100 && mouseX <= 300 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed ){ // als je op Menu klikt ga je terug naar het beginscherm
+            spelStatus = PAUZE
+        }
+  text("pauzeer", 100, 650, 250, 700);
+  if (mouseX >= 100 && mouseX <= 250 && mouseY >= 650 && mouseY <= 700 && mouseIsPressed){
+      spelStatus = PAUZE
+  }  
 };
 
 
@@ -205,10 +217,11 @@ function setup() {
 function draw() {
   switch (spelStatus) {
     case STARTSCHERM:
-    tekenVijand(veldBreedte, veldLengte, tekstgrootteUitleg, tekstgrootteSpelen, vergrotertekstUitlegenSpelen); {
+    tekenVijand(veldBreedte, veldLengte, tekstgrootteUitleg, tekstgrootteSpelen, vergrotertekstUitleg, vergrotertekstSpelen); {
          fill(102, 215, 237);
          rect(0, 0, veldBreedte, veldLengte);
          fill("white");
+        
          textSize(50);
          textFont("georgia");
          text("Welkom bij Pong!", 400, 100);
@@ -218,33 +231,36 @@ function draw() {
          text("Uitleg", 200, 400, 300, 450);
          textSize(tekstgrootteSpelen);
          text("Spelen", 900, 400, 1000, 450);
-         if (mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450 && mouseIsPressed){
+         if (mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450 && mouseIsPressed){ // Als je op Uitleg drukt krijg je het uitlegscherm te zien
              spelStatus = UITLEG;
          }
-         else if (mouseX >= 700 && mouseX <= 800 && mouseY >= 400 && mouseY <= 450 && mouseIsPressed){
+         else if (mouseX >= 900 && mouseX <= 1000 && mouseY >= 400 && mouseY <= 450 && mouseIsPressed){ // als je op Spelen drukt ga je naar het speelscherm
              spelStatus = SPELEN;
          }
-         else if(mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450){
-              tekstgrootteUitlegenSpelen = tekstgrootteUitlegenSpelen + vergrotertekstUitlegenSpelen;
-              if (tekstgrootteUitlegenSpelen = 60){
-                  vergrotertekstUitlegenSpelen = -10;
-
-              } 
+         else if(mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450){ // als de muis over Uitleg beweegt wordt Uitleg groter
+              tekstgrootteUitleg = tekstgrootteUitleg + vergrotertekstUitleg;
+              if (tekstgrootteUitleg = 60){ // tekst wordt maar een keer groter
+                  vergrotertekstUitleg = 0;
+              }
          }
-         else if (mouseX >= 700 && mouseX <= 800 && mouseY >= 400 && mouseY <= 450){
-             tekstgrootteUitlegenSpelen = tekstgrootteUitlegenSpelen + 10;
-             if (tekstgrootteUitlegenSpelen = 60){
-                  vergrotertekstUitlegenSpelen = -10;
-
-              } 
-         
+         else if (mouseX >= 900 && mouseX <= 1000 && mouseY >= 400 && mouseY <= 450){ // als de muis over Spelen beweegt wordt Spelen groter
+             tekstgrootteSpelen = tekstgrootteSpelen + vergrotertekstSpelen;
+             if (tekstgrootteSpelen = 60){
+                 vergrotertekstSpelen = 0;
+             }
         }
+         else if (mouseX < 200 || mouseX > 300 || mouseY < 400 || mouseY > 450 && mouseX < 700 || mouseX > 800 || mouseY < 400 || mouseY > 450 ){ // Uitleg wordt weer kleiner als de muis niet meer over Uitleg beweegt
+            tekstgrootteUitleg = 50;
+            tekstgrootteSpelen = 50;
+        }
+        // Spelen wordt weer kleiner als de muis niet meer over Spelen beweegt 
+        
     }
 
 
 
     break;
-
+   
     case UITLEG:
     checkSpelerGeraakt();{
         fill(102, 215, 237);
@@ -252,7 +268,7 @@ function draw() {
         textSize(50);
         textFont("georgia");
         text("Welkom bij Pong!", 400, 100);
-        textSize(40);
+        textSize(35);
         text("'s werelds leukste game", 350, 200);
         fill("white");
         textSize(20);
@@ -260,10 +276,10 @@ function draw() {
         textSize(30);
         text("Menu", 200, 600, 300, 650);
         text("Spelen", 1100, 600, 1150, 650);
-        if (mouseX >= 200 && mouseX <= 300 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed ){
+        if (mouseX >= 200 && mouseX <= 300 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed ){ // als je op Menu klikt ga je terug naar het beginscherm
             spelStatus = STARTSCHERM
         }
-        else if (mouseX >= 1100 && mouseX <= 1150 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed){
+        else if (mouseX >= 1100 && mouseX <= 1150 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed){ // als je op Spelen klikt ga je naar het speelscherm
             spelStatus = SPELEN
         }
     }
@@ -271,10 +287,10 @@ function draw() {
 
     case SPELEN:
       beweegSpeler(); {
-          if (keyIsDown(UP_ARROW) && yPositieSpeler > 15  ) {
+          if (keyIsDown(UP_ARROW) && yPositieSpeler > 0  ) { // met het pijltje omhoog kan je de speler omhoog bewegen
               yPositieSpeler = yPositieSpeler - 10;
           }
-          if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 605) {
+          if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 700 - spelerLengte) { // met het pijltje omlaag kan je de speler omlaag bewegen
               yPositieSpeler = yPositieSpeler + 10;
           }
       }
@@ -334,6 +350,34 @@ function draw() {
       if (checkGameOver()) {
         spelStatus = GAMEOVER;
       }
+      break;
+
+      case PAUZE:
+      beweegVariabeleX = beweegVariabeleX - beweegVariabeleX;
+      beweegVariabeleY = beweegVariabeleY - beweegVariabeleY;
+       if (keyIsDown(UP_ARROW) && yPositieSpeler > 0  ) { // met het pijltje omhoog kan je de speler niet meer omhoog bewegen
+              yPositieSpeler = yPositieSpeler;
+          }
+       else if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 700 - spelerLengte) { // met het pijltje omlaag kan je de speler niet meer omlaag bewegen
+              yPositieSpeler = yPositieSpeler;
+          }
+        else if (keyIsDown(LEFT_ARROW)){
+            spelStatus = SPELEN;
+            
+        }
+        else if (keyIsDown(RIGHT_ARROW)){
+            spelStatus = STARTSCHERM;
+            score = score - score;
+            balX = 500;
+            balY = 300;
+            beweegVariabeleX = 5;
+            beweegVariabeleY = 2.5;
+        }
+      fill(218, 225, 227);
+      rect(425, 200, 450, 225);
+      fill("black");
+      textSize(25);
+      text("Je hebt het spel gepauzeerd. Als je verder wilt spelen, druk op het linkerpijltje op je toetsenbord. Wil je terug naar het menu, druk dan op het rechterpijltje. Je score gaat dan verloren", 450, 225, 400, 300);
       break;
   }
 }
