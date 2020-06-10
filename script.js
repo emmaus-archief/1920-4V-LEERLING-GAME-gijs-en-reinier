@@ -66,8 +66,8 @@ var tekstgrootteUitleg = 50;
 var tekstgrootteSpelen = 50;
 var vergrotertekstUitleg = 10;
 var vergrotertekstSpelen = 10;
-
-
+var rechthoekX = 425;
+var rechthoekY = 200;
 /* ********************************************* */
 /*      functies die je gebruikt in je game      */
 /* ********************************************* */
@@ -76,25 +76,30 @@ var vergrotertekstSpelen = 10;
 /**
  * Tekent het speelveld
  */
-var tekenVeld = function () {
+var tekenVeld = function () { // er wordt een veld getekend
   fill(kleurWaarde, 103, 77);
   rect(0, 0, veldBreedte, veldLengte);
   fill("white");
-  rect(muurX, 10, 10, muurLengte);
+  rect(muurX, 10, 10, muurLengte); // witte muur aan de rechterzijde wordt getekend
   fill("white");
   textFont('georgia');
   textSize(80);
   text("Pong!", veldBreedte / 2 - 200, 100);
   textSize(60);
-  text("score:  " + score, veldBreedte / 2 - 600, 100)
+  text("score:  " + score, veldBreedte / 2 - 600, 100) // je kan je score linksboven in het scherm zien
   textSize(30);
   text("Menu", 100, 600, 250, 650);
   if (mouseX >= 100 && mouseX <= 300 && mouseY >= 600 && mouseY <= 650 && mouseIsPressed ){ // als je op Menu klikt ga je terug naar het beginscherm
-            spelStatus = PAUZE
+            spelStatus = STARTSCHERM;
+            score = score - score;
+            balX = 500;
+            balY = 300;
+            beweegVariabeleX = 5;
+            beweegVariabeleY = 2.5;
         }
-  text("pauzeer", 100, 650, 250, 700);
-  if (mouseX >= 100 && mouseX <= 250 && mouseY >= 650 && mouseY <= 700 && mouseIsPressed){
-      spelStatus = PAUZE
+  text("Pauze", 100, 650, 250, 700);
+  if (mouseX >= 100 && mouseX <= 250 && mouseY >= 650 && mouseY <= 700 && mouseIsPressed){ // als je op Pauze klikt pauzeer je het spel
+      spelStatus = PAUZE;
   }  
 };
 
@@ -109,11 +114,7 @@ var tekenVijand = function(veldBreedte, veldLengte, tekstgrootteUitleg, tekstgro
 
 };
 
-var veranderKleur = function(kleurWaarde, score){
-    if (score >= 5){
-        kleurWaarde = kleurWaarde - 10;
-    }
-}
+
 /**
  * Tekent de kogel of de bal
  * @param {number} x x-coördinaat
@@ -130,7 +131,7 @@ var tekenKogel = function(x, y) {
  * @param {number} x x-coördinaat
  * @param {number} y y-coördinaat
  */
-var tekenSpeler = function(xPositieSpeler, yPositieSpeler) {
+var tekenSpeler = function(xPositieSpeler, yPositieSpeler) { // je speler wordt getekend
   fill("white");
   rect(xPositieSpeler, yPositieSpeler, spelerBreedte, spelerLengte);
 };
@@ -148,7 +149,7 @@ var beweegVijand = function() {
 /**
  * Updatet globale variabelen met positie van kogel of bal
  */
-var tekenBal = function(balX, balY) {
+var tekenBal = function(balX, balY) { // de bal wordt getekend
    fill("white");
    ellipse(balX, balY, balBreedte, balLengte);
 };
@@ -217,6 +218,7 @@ function setup() {
 function draw() {
   switch (spelStatus) {
     case STARTSCHERM:
+    // je krijgt een startscherm te zien met uitlegoptie en speeloptie
     tekenVijand(veldBreedte, veldLengte, tekstgrootteUitleg, tekstgrootteSpelen, vergrotertekstUitleg, vergrotertekstSpelen); {
          fill(102, 215, 237);
          rect(0, 0, veldBreedte, veldLengte);
@@ -239,21 +241,21 @@ function draw() {
          }
          else if(mouseX >= 200 && mouseX <= 300 && mouseY >= 400 && mouseY <= 450){ // als de muis over Uitleg beweegt wordt Uitleg groter
               tekstgrootteUitleg = tekstgrootteUitleg + vergrotertekstUitleg;
-              if (tekstgrootteUitleg = 60){ // tekst wordt maar een keer groter
+              if (tekstgrootteUitleg = 60){ // tekst wordt maar een keer groter, en blijf niet groter worden als je de muis op Uitleg houdt voor een langere periode
                   vergrotertekstUitleg = 0;
               }
          }
          else if (mouseX >= 900 && mouseX <= 1000 && mouseY >= 400 && mouseY <= 450){ // als de muis over Spelen beweegt wordt Spelen groter
              tekstgrootteSpelen = tekstgrootteSpelen + vergrotertekstSpelen;
-             if (tekstgrootteSpelen = 60){
+             if (tekstgrootteSpelen = 60){ // de tekst wordt maar een keer groter, en blijft niet groter worden als je de muis op Spelen houdt voor een langere periode.
                  vergrotertekstSpelen = 0;
              }
         }
-         else if (mouseX < 200 || mouseX > 300 || mouseY < 400 || mouseY > 450 && mouseX < 700 || mouseX > 800 || mouseY < 400 || mouseY > 450 ){ // Uitleg wordt weer kleiner als de muis niet meer over Uitleg beweegt
+         else if (mouseX < 200 || mouseX > 300 || mouseY < 400 || mouseY > 450 && mouseX < 700 || mouseX > 800 || mouseY < 400 || mouseY > 450 ){ // Spelen en Uitleg wordt weer kleiner als de muis niet meer over Uitleg beweegt
             tekstgrootteUitleg = 50;
             tekstgrootteSpelen = 50;
         }
-        // Spelen wordt weer kleiner als de muis niet meer over Spelen beweegt 
+      
         
     }
 
@@ -266,13 +268,15 @@ function draw() {
         fill(102, 215, 237);
         rect(0, 0, veldBreedte, veldLengte);
         textSize(50);
+        
         textFont("georgia");
+        fill("white");
         text("Welkom bij Pong!", 400, 100);
         textSize(35);
         text("'s werelds leukste game", 350, 200);
-        fill("white");
+        
         textSize(20);
-        text("Bij Pong is het de bedoeling om een zo hoog mogelijke score te halen. Dit doe je door met je speler, die je door middel van de pijltjes omhoog en omlaag op je toetsenbord omhoog en omlaag kan laten bewegen, het witte balletje terug te kaatsen naar waar die vandaan komt. Als dan het balletje de witte muur aan de rechterzijde van het speelveld raakt, krijg je een punt. Hoe hoger je score, hoe moeilijker het spelletje wordt. Je speler wordt kleiner en het balletje beweegt sneller. Veel succes!", 200, 300, 1000, 800);
+        text("Bij Pong is het de bedoeling om een zo hoog mogelijke score te halen. Dit doe je door met je speler, die je door middel van de pijltjes omhoog en omlaag op je toetsenbord omhoog en omlaag kan laten bewegen, het witte balletje terug te kaatsen naar waar die vandaan komt. Als dan het balletje de witte muur aan de rechterzijde van het speelveld raakt, krijg je een punt. Hoe hoger je score, hoe moeilijker het spelletje wordt. Je speler wordt kleiner en het balletje beweegt sneller. Tijdens het spelen kan je stoppen door op de Pauze-knop te drukken. Als je terug gaat naar het menu, gaat je score verloren. Veel succes!", 200, 300, 1000, 800);
         textSize(30);
         text("Menu", 200, 600, 300, 650);
         text("Spelen", 1100, 600, 1150, 650);
@@ -353,19 +357,19 @@ function draw() {
       break;
 
       case PAUZE:
-      beweegVariabeleX = beweegVariabeleX - beweegVariabeleX;
-      beweegVariabeleY = beweegVariabeleY - beweegVariabeleY;
+      balX = balX - 0; // de bal stopt met bewegen in de pauze-modus
+      balY = balY - 0; // de bal stopt met bewegen in de pauze-modus
        if (keyIsDown(UP_ARROW) && yPositieSpeler > 0  ) { // met het pijltje omhoog kan je de speler niet meer omhoog bewegen
               yPositieSpeler = yPositieSpeler;
           }
        else if (keyIsDown(DOWN_ARROW) && yPositieSpeler < 700 - spelerLengte) { // met het pijltje omlaag kan je de speler niet meer omlaag bewegen
               yPositieSpeler = yPositieSpeler;
           }
-        else if (keyIsDown(LEFT_ARROW)){
-            spelStatus = SPELEN;
+        else if (mouseX > rechthoekX + 30 && mouseX < rechthoekX + 130 && mouseY > rechthoekY + 100 && mouseY < rechthoekY + 150 && mouseIsPressed){ // als je op de "ja" optie drukt ga je verder met spelen
+            spelStatus = SPELEN; 
             
         }
-        else if (keyIsDown(RIGHT_ARROW)){
+        else if (mouseX > rechthoekX + 300 && mouseX < rechthoekX + 400 && mouseY > rechthoekY + 100 && mouseY < rechthoekY + 150 && mouseIsPressed){ // als je op de "nee" optie drukt ga je na het startscherm en wordt je score en de gegevens van het balletje hersteld
             spelStatus = STARTSCHERM;
             score = score - score;
             balX = 500;
@@ -373,11 +377,18 @@ function draw() {
             beweegVariabeleX = 5;
             beweegVariabeleY = 2.5;
         }
-      fill(218, 225, 227);
-      rect(425, 200, 450, 225);
+      fill(218, 225, 227);  // er wordt een veld getekent waarop staat dat je gepauzeerd hebt 
+      rect(rechthoekX, rechthoekY, 450, 225);
+      fill(210, 220, 220);
+      stroke(2);
+      rect(rechthoekX + 30, rechthoekY + 100, 100, 50); // er worden in het veld 2 kleine velden getekend waarop je kan kiezen of je verder speelt of niet
+      rect(rechthoekX + 300, rechthoekY + 100, 100, 50);
       fill("black");
+      text("Ja", rechthoekX + 50, rechthoekY + 130);
+      text("Nee", rechthoekX + 320, rechthoekY + 130);
       textSize(25);
-      text("Je hebt het spel gepauzeerd. Als je verder wilt spelen, druk op het linkerpijltje op je toetsenbord. Wil je terug naar het menu, druk dan op het rechterpijltje. Je score gaat dan verloren", 450, 225, 400, 300);
+      text("Pauze. Verder spelen?", 500, 225, 400, 300);
       break;
   }
 }
+
